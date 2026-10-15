@@ -1,0 +1,36 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+
+    - name: Create default build files
+      run: |
+        echo "sdk.dir=$ANDROID_HOME" > local.properties
+        echo "include ':app'" > settings.gradle
+
+    - name: Create basic app structure
+      run: |
+        mkdir -p app/src/main
+        echo 'plugins { id "com.android.application" }' > app/build.gradle
+        echo 'android { namespace "com.mobile.cad"; compileSdk 34; defaultConfig { applicationId "com.mobile.cad"; minSdk 24; targetSdk 34; versionCode 1; versionName "1.0"; } }' >> app/build.gradle
+
+    - name: Build APK (Placeholder)
+      run: echo "Structure initialized"
