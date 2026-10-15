@@ -18,19 +18,20 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-
-    - name: Create default build files
+    - name: Grant execute permission for gradlew
       run: |
-        echo "sdk.dir=$ANDROID_HOME" > local.properties
-        echo "include ':app'" > settings.gradle
+        if [ -f "gradlew" ]; then
+          chmod +x gradlew
+        else
+          gradle wrapper
+          chmod +x gradlew
+        fi
 
-    - name: Create basic app structure
-      run: |
-        mkdir -p app/src/main
-        echo 'plugins { id "com.android.application" }' > app/build.gradle
-        echo 'android { namespace "com.mobile.cad"; compileSdk 34; defaultConfig { applicationId "com.mobile.cad"; minSdk 24; targetSdk 34; versionCode 1; versionName "1.0"; } }' >> app/build.gradle
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug
 
-    - name: Build APK (Placeholder)
-      run: echo "Structure initialized"
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug
+        path: app/build/outputs/apk/debug/app-debug.apk
